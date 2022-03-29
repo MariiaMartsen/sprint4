@@ -5,6 +5,7 @@ import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 public class Mesto1Test {
 
@@ -38,6 +39,8 @@ public class Mesto1Test {
     }
 
     @Step("Take the first photo from the list")
+    @DisplayName("List of photo")
+    @Description("This test is for looking list of photos.")
     private String getTheFirstPhotoId() {
         // Получение списка фотографий и выбор первой из него
         return given()
@@ -47,6 +50,8 @@ public class Mesto1Test {
     }
 
     @Step("Like a photo by id")
+    @DisplayName("Like by id")
+    @Description("This test is for photo by id")
     private void likePhotoById(String photoId) {
         // Лайк фотографии по photoId
         given()
@@ -56,12 +61,24 @@ public class Mesto1Test {
     }
 
     @Step("Delete like from the photo by id")
+    @DisplayName("Like photo by id")
+    @Description("This test is for like photo by id")
     private void deleteLikePhotoById(String photoId) {
         // Снять лайк с фотографии по photoId
         given()
                 .auth().oauth2(bearerToken) // Передаём токен для аутентификации
                 .delete("/api/cards/{photoId}/likes", photoId) // Делаем DELETE-запрос
                 .then().assertThat().statusCode(200); // Проверяем, что сервер вернул код 200
+    }
+
+    @Test
+    @DisplayName("Check user name")
+    @Description("This test is for check current user's name.")
+    public void checkUserName() {
+        given()
+                .auth().oauth2(bearerToken) // Передаём токен для аутентификации
+                .get("/api/users/me") // Делаем GET-запрос
+                .then().assertThat().body("data.name", equalTo("Incorrect Name")); // Проверяем, что имя соответствует ожидаемому
     }
 
 }
